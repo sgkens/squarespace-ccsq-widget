@@ -10,6 +10,7 @@
 - Uses **Squarespace's** `Client-Side` Custom Query `APIv2` to fetch products from a Squarespace store.
 - Add widgets via the `Add block` > `Code` > `Code` element, with-in a section of your Squarespace site.
 - Supports filtering by **category**, **tag**, **keyword**, **type**, **minimum price**, **maximum price**, **added after**, **added before**, **sort order**, **limit**, and **columns**.
+- Tag cloud generation with customizable font size and count display.
 - Supports displaying a loading message, empty message, and a grid with configurable columns.
 - Supports displaying products in a grid or list format.
 - Supports displaying products with or without:
@@ -367,6 +368,30 @@ Omitting the `data-sort-by` attribute completely retains the default array posit
   data-columns="3"
 ></div>
 ```
+
+### 7. Tag Cloud Configuration
+
+#### *Tag Cloud with Custom Font Size*
+
+```html
+<div
+  data-sqpq-cloud
+  data-min-size="0.85"
+  data-max-size="1.75"
+  data-show-count="true"
+></div>
+```
+
+#### *Tag Cloud with Custom Count Display*
+
+```html
+<div
+  data-sqpq-cloud
+  data-min-size="0.85"
+  data-max-size="1.75"
+  data-show-count="false"
+></div>
+``` 
 
 ## License
 

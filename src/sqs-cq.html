@@ -1,213 +1,246 @@
 <script>
-    // Squarespace Custom Query
-    // https://github.com/squarespace/custom-query
-    // Uses Squarespace's Client-Side Custom Query API v2 to fetch products from a Squarespace store.
-
-    (function () {
-        'use strict';
+  // Squarespace Custom Query
+  // https://github.com/squarespace/custom-query
+  // Uses Squarespace's Client-Side Custom Query API v2 to fetch products from a Squarespace store.
+  (function () {
+    'use strict';
 
     const STORE_SLUG = 'store';
     const FETCH_LIMIT = 200;
     let _cache = null;
 
     const UI = {
-        gridClass: (cols) => `sqpq-grid sqpq-cols-${cols}`,
-    loading: () => `<p class="sqpq-loading">Loading…</p>`,
-    empty: (msg) => `<p class="sqpq-empty">${msg}</p>`
-  };
-
-    async function fetchAllProducts() {
-    if (_cache) return _cache;
-    try {
-      const res = await fetch(`/${STORE_SLUG}?format=json&count=${FETCH_LIMIT}`);
-    if (!res.ok) throw new Error(`HTTP Status ${res.status}`);
-    const data = await res.json();
-    _cache = data.items || [];
-    return _cache;
-    } catch (e) {
-        console.warn('[sq-products] Fetch pipeline failed:', e);
-    return [];
-    }
-  }
-
-    function parsePrice(product) {
-    const pricing = product.structuredContent?.productDetails?.pricing;
-    const variants = product.structuredContent?.productDetails?.variants;
-
-    const raw = pricing?.basePrice?.value ||
-    variants?.[0]?.pricing?.basePrice?.value ||
-    product.variants?.[0]?.price ||
-    0;
-    return raw / 100;
-  }
-
-    function filterProducts(products, opts) {
-    return products.filter(p => {
-      const title = (p.title || '').toLowerCase();
-      const cats = (p.categories || []).map(c => c.toLowerCase());
-      const tags = (p.tags || []).map(t => t.toLowerCase());
-    const addedDate = new Date(p.addedOn || p.publishOn || 0);
-    const price = parsePrice(p);
-
-    const rawType = p.structuredContent?.productDetails?.type || p.customProductType || '';
-    const productType = rawType.toLowerCase();
-
-    if (opts.category) {
-        const wanted = opts.category.toLowerCase().split(',').map(s => s.trim());
-        if (!wanted.some(w => cats.includes(w))) return false;
-      }
-
-    if (opts.tag) {
-        const wanted = opts.tag.toLowerCase().split(',').map(s => s.trim());
-        if (!wanted.some(w => tags.includes(w))) return false;
-      }
-
-    if (opts.keyword) {
-        const kw = opts.keyword.toLowerCase().trim();
-    if (!title.includes(kw)) return false;
-      }
-
-    if (opts.type) {
-        if (!productType.includes(opts.type.toLowerCase())) return false;
-      }
-
-    if (opts.minPrice !== null && price < opts.minPrice) return false;
-      if (opts.maxPrice !== null && price > opts.maxPrice) return false;
-    if (opts.addedAfter && addedDate < new Date(opts.addedAfter)) return false;
-      if (opts.addedBefore && addedDate > new Date(opts.addedBefore)) return false;
-
-    return true;
-    });
-  }
-
-    function sortProducts(products, sortBy) {
-    const copy = [...products];
-    switch ((sortBy || '').toLowerCase()) {
-      case 'price-asc':
-        return copy.sort((a, b) => parsePrice(a) - parsePrice(b));
-    case 'price-desc':
-        return copy.sort((a, b) => parsePrice(b) - parsePrice(a));
-    case 'date-asc':
-        return copy.sort((a, b) => new Date(a.addedOn || 0) - new Date(b.addedOn || 0));
-    case 'date-desc':
-        return copy.sort((a, b) => new Date(b.addedOn || 0) - new Date(a.addedOn || 0));
-    case 'title-asc':
-        return copy.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-    case 'title-desc':
-        return copy.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
-    default:
-    return copy;
-    }
-  }
-
-    function formatPrice(amt) {
-    return '$' + amt.toFixed(2);
-  }
-
-    function getImageUrl(product) {
-    return product.assetUrl ||
-    product.thumbnailUrl ||
-    product.structuredContent?.productDetails?.images?.[0]?.assetUrl ||
-    '';
-  }
-
-    function renderCard(product) {
-    const price = parsePrice(product);
-    const imgUrl = getImageUrl(product);
-    const title = product.title || 'Untitled';
-    const url = product.fullUrl || '#';
-    const imgHtml = imgUrl
-    ? `<img src="${imgUrl}?format=500w" alt="${title.replace(/" /g, '&quot;')}" loading="lazy" />`
-    : `<div class="sqpq-no-img"></div>`;
-
-    return `
-    <a class="sqpq-card" href="${url}">
-        <div class="sqpq-img-wrap">${imgHtml}</div>
-        <div class="sqpq-info">
-            <span class="sqpq-title">${title}</span>
-            <span class="sqpq-price">${price > 0 ? formatPrice(price) : ''}</span>
-        </div>
-    </a>`;
-  }
-
-    function renderWidget(el, products, opts) {
-    const limited = opts.limit > 0 ? products.slice(0, opts.limit) : products;
-
-    if (limited.length === 0) {
-        el.innerHTML = UI.empty(opts.emptyMessage);
-    return;
-    }
-
-    el.innerHTML = `
-    <div class="${UI.gridClass(opts.columns)}">
-        ${limited.map(renderCard).join('')}
-    </div>`;
-  }
-
-    async function initWidget(el) {
-    const opts = {
-        category: el.dataset.category || '',
-    tag: el.dataset.tag || '',
-    keyword: el.dataset.keyword || '',
-    type: el.dataset.type || '',
-    minPrice: el.dataset.minPrice ? parseFloat(el.dataset.minPrice) : null,
-    maxPrice: el.dataset.maxPrice ? parseFloat(el.dataset.maxPrice) : null,
-    addedAfter: el.dataset.addedAfter || '',
-    addedBefore: el.dataset.addedBefore || '',
-    sortBy: el.dataset.sortBy || '',
-    limit: parseInt(el.dataset.limit || '12', 10),
-    columns: parseInt(el.dataset.columns || '3', 10),
-    emptyMessage: el.dataset.emptyMessage || 'No products found.',
+      gridClass: (cols) => `sqpq-grid sqpq-cols-${cols}`,
+      loading: () => `<p class="sqpq-loading">Loading…</p>`,
+      empty: (msg) => `<p class="sqpq-empty">${msg}</p>`
     };
 
-    el.innerHTML = UI.loading();
+    async function fetchAllProducts() {
+      if (_cache) return _cache;
+      try {
+        const res = await fetch(`/${STORE_SLUG}?format=json&count=${FETCH_LIMIT}`);
+        if (!res.ok) throw new Error(`HTTP Status ${res.status}`);
+        const data = await res.json();
+        _cache = data.items || [];
+        return _cache;
+      } catch (e) {
+        console.warn('[sq-products] Fetch pipeline failed:', e);
+        return [];
+      }
+    }
 
-    const all = await fetchAllProducts();
-    const filtered = filterProducts(all, opts);
-    const sorted = sortProducts(filtered, opts.sortBy);
+    function parsePrice(product) {
+      const pricing = product.structuredContent?.productDetails?.pricing;
+      const variants = product.structuredContent?.productDetails?.variants;
+      const raw = pricing?.basePrice?.value ||
+        variants?.[0]?.pricing?.basePrice?.value ||
+        product.variants?.[0]?.price ||
+        0;
+      return raw / 100;
+    }
 
-    renderWidget(el, sorted, opts);
-  }
+    function filterProducts(products, opts) {
+      return products.filter(p => {
+        const title = (p.title || '').toLowerCase();
+        const cats = (p.categories || []).map(c => c.toLowerCase());
+        const tags = (p.tags || []).map(t => t.toLowerCase());
+        const addedDate = new Date(p.addedOn || p.publishOn || 0);
+        const price = parsePrice(p);
+        const rawType = p.structuredContent?.productDetails?.type || p.customProductType || '';
+        const productType = rawType.toLowerCase();
+
+        if (opts.category) {
+          const wanted = opts.category.toLowerCase().split(',').map(s => s.trim());
+          if (!wanted.some(w => cats.includes(w))) return false;
+        }
+        if (opts.tag) {
+          const wanted = opts.tag.toLowerCase().split(',').map(s => s.trim());
+          if (!wanted.some(w => tags.includes(w))) return false;
+        }
+        if (opts.keyword) {
+          const kw = opts.keyword.toLowerCase().trim();
+          if (!title.includes(kw)) return false;
+        }
+        if (opts.type) {
+          if (!productType.includes(opts.type.toLowerCase())) return false;
+        }
+        if (opts.minPrice !== null && price < opts.minPrice) return false;
+        if (opts.maxPrice !== null && price > opts.maxPrice) return false;
+        if (opts.addedAfter && addedDate < new Date(opts.addedAfter)) return false;
+        if (opts.addedBefore && addedDate > new Date(opts.addedBefore)) return false;
+
+        return true;
+      });
+    }
+
+    function sortProducts(products, sortBy) {
+      const copy = [...products];
+      switch ((sortBy || '').toLowerCase()) {
+        case 'price-asc': return copy.sort((a, b) => parsePrice(a) - parsePrice(b));
+        case 'price-desc': return copy.sort((a, b) => parsePrice(b) - parsePrice(a));
+        case 'date-asc': return copy.sort((a, b) => new Date(a.addedOn || 0) - new Date(b.addedOn || 0));
+        case 'date-desc': return copy.sort((a, b) => new Date(b.addedOn || 0) - new Date(a.addedOn || 0));
+        case 'title-asc': return copy.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        case 'title-desc': return copy.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        default: return copy;
+      }
+    }
+
+    function formatPrice(amt) {
+      return '$' + amt.toFixed(2);
+    }
+
+    function getImageUrl(product) {
+      return product.assetUrl || product.thumbnailUrl || product.structuredContent?.productDetails?.images?.[0]?.assetUrl || '';
+    }
+
+    function renderCard(product) {
+      const price = parsePrice(product);
+      const imgUrl = getImageUrl(product);
+      const title = product.title || 'Untitled';
+      const url = product.fullUrl || '#';
+      const imgHtml = imgUrl ? `<img src="${imgUrl}?format=500w" alt="${title.replace(/"/g, '&quot;')}" loading="lazy" />` : `<div class="sqpq-no-img"></div>`;
+
+      return `
+      <a class="sqpq-card" href="${url}">
+        <div class="sqpq-img-wrap">${imgHtml}</div>
+        <div class="sqpq-info">
+          <span class="sqpq-title">${title}</span>
+          <span class="sqpq-price">${price > 0 ? formatPrice(price) : ''}</span>
+        </div>
+      </a>`;
+    }
+
+    function renderWidget(el, products, opts) {
+      const limited = opts.limit > 0 ? products.slice(0, opts.limit) : products;
+      if (limited.length === 0) {
+        el.innerHTML = UI.empty(opts.emptyMessage);
+        return;
+      }
+      el.innerHTML = `<div class="${UI.gridClass(opts.columns)}">${limited.map(renderCard).join('')}</div>`;
+    }
+
+    async function initWidget(el) {
+      const opts = {
+        category: el.dataset.category || '',
+        tag: el.dataset.tag || '',
+        keyword: el.dataset.keyword || '',
+        type: el.dataset.type || '',
+        minPrice: el.dataset.minPrice ? parseFloat(el.dataset.minPrice) : null,
+        maxPrice: el.dataset.maxPrice ? parseFloat(el.dataset.maxPrice) : null,
+        addedAfter: el.dataset.addedAfter || '',
+        addedBefore: el.dataset.addedBefore || '',
+        sortBy: el.dataset.sortBy || '',
+        limit: parseInt(el.dataset.limit || '12', 10),
+        columns: parseInt(el.dataset.columns || '3', 10),
+        emptyMessage: el.dataset.emptyMessage || 'No products found.',
+      };
+
+      el.innerHTML = UI.loading();
+      const all = await fetchAllProducts();
+      const filtered = filterProducts(all, opts);
+      const sorted = sortProducts(filtered, opts.sortBy);
+      renderWidget(el, sorted, opts);
+    }
+
+    // ── Tag Cloud Core Engine ──────────────────────────────────
+    async function initTagCloud(el) {
+      el.innerHTML = UI.loading();
+      const all = await fetchAllProducts();
+
+      if (all.length === 0) {
+        el.innerHTML = UI.empty('No tags found.');
+        return;
+      }
+
+      const tagCounts = {};
+      all.forEach(p => {
+        (p.tags || []).forEach(t => {
+          const normalized = t.trim();
+          if (!normalized) return;
+          tagCounts[normalized] = (tagCounts[normalized] || 0) + 1;
+        });
+      });
+
+      const tags = Object.keys(tagCounts).sort((a, b) => a.localeCompare(b));
+      if (tags.length === 0) {
+        el.innerHTML = UI.empty('No tags found.');
+        return;
+      }
+
+      const counts = Object.values(tagCounts);
+      const minCount = Math.min(...counts);
+      const maxCount = Math.max(...counts);
+      const countRange = maxCount - minCount || 1;
+
+      // Scale sizing boundaries (rem)
+      const minSize = parseFloat(el.dataset.minSize || '0.85');
+      const maxSize = parseFloat(el.dataset.maxSize || '1.75');
+
+      const cloudHtml = tags.map(tag => {
+        const count = tagCounts[tag];
+        // Linear interpolation mapping frequency weight to font sizes
+        const size = minSize + ((count - minCount) / countRange) * (maxSize - minSize);
+        const safeTag = encodeURIComponent(tag);
+
+        return `
+        <a href="/${STORE_SLUG}?tag=${safeTag}" 
+           class="sqpq-cloud-item" 
+           style="font-size: ${size.toFixed(2)}rem;"
+           data-count="${count}">
+          ${tag}${el.dataset.showCount === 'true' ? ` <span class="sqpq-cloud-count">(${count})</span>` : ''}
+        </a>`;
+      }).join('');
+
+      el.innerHTML = `<div class="sqpq-cloud-container">${cloudHtml}</div>`;
+    }
 
     function injectStyles() {
-    if (document.getElementById('sqpq-styles')) return;
-    const style = document.createElement('style');
-    style.id = 'sqpq-styles';
-    style.textContent = `
-    .sqpq-grid {display: grid; gap: 1.25rem; }
-    .sqpq-cols-1 {grid - template - columns: 1fr; }
-    .sqpq-cols-2 {grid - template - columns: repeat(2, 1fr); }
-    .sqpq-cols-3 {grid - template - columns: repeat(3, 1fr); }
-    .sqpq-cols-4 {grid - template - columns: repeat(4, 1fr); }
-    @media (max-width: 768px) {
-        .sqpq - cols - 3, .sqpq - cols - 4 {grid - template - columns: repeat(2, 1fr); }
+      if (document.getElementById('sqpq-styles')) return;
+      const style = document.createElement('style');
+      style.id = 'sqpq-styles';
+      style.textContent = `
+      .sqpq-grid { display: grid; gap: 1.25rem; }
+      .sqpq-cols-1 { grid-template-columns: 1fr; }
+      .sqpq-cols-2 { grid-template-columns: repeat(2, 1fr); }
+      .sqpq-cols-3 { grid-template-columns: repeat(3, 1fr); }
+      .sqpq-cols-4 { grid-template-columns: repeat(4, 1fr); }
+      @media (max-width: 768px) {
+        .sqpq-cols-3, .sqpq-cols-4 { grid-template-columns: repeat(2, 1fr); }
       }
-    @media (max-width: 480px) {
-        .sqpq - cols - 2, .sqpq - cols - 3, .sqpq - cols - 4 {grid - template - columns: 1fr; }
+      @media (max-width: 480px) {
+        .sqpq-cols-2, .sqpq-cols-3, .sqpq-cols-4 { grid-template-columns: 1fr; }
       }
-    .sqpq-card {display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: opacity .2s ease; }
-    .sqpq-card:hover {opacity: .8; }
-    .sqpq-img-wrap {aspect - ratio: 1 / 1; overflow: hidden; background: #f4f4f4; margin-bottom: .6rem; }
-    .sqpq-img-wrap img {width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
-    .sqpq-card:hover .sqpq-img-wrap img {transform: scale(1.04); }
-    .sqpq-no-img {width: 100%; height: 100%; background: #eee; }
-    .sqpq-info {display: flex; flex-direction: column; gap: .2rem; }
-    .sqpq-title {font - size: .9rem; line-height: 1.35; }
-    .sqpq-price {font - size: .85rem; opacity: .7; }
-    .sqpq-loading, .sqpq-empty {font - size: .9rem; opacity: .6; padding: 1rem 0; }
+      .sqpq-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: opacity .2s ease; }
+      .sqpq-card:hover { opacity: .8; }
+      .sqpq-img-wrap { aspect-ratio: 1 / 1; overflow: hidden; background: #f4f4f4; margin-bottom: .6rem; }
+      .sqpq-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+      .sqpq-card:hover .sqpq-img-wrap img { transform: scale(1.04); }
+      .sqpq-no-img { width: 100%; height: 100%; background: #eee; }
+      .sqpq-info { display: flex; flex-direction: column; gap: .2rem; }
+      .sqpq-title { font-size: .9rem; line-height: 1.35; }
+      .sqpq-price { font-size: .85rem; opacity: .7; }
+      .sqpq-loading, .sqpq-empty { font-size: .9rem; opacity: .6; padding: 1rem 0; }
+
+      /* Tag Cloud UI Style Rules */
+      .sqpq-cloud-container { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; align-items: center; padding: 1rem 0; }
+      .sqpq-cloud-item { text-decoration: none; color: inherit; opacity: 0.8; transition: transform 0.2s ease, opacity 0.2s ease; display: inline-block; line-height: 1.2; }
+      .sqpq-cloud-item:hover { opacity: 1; transform: scale(1.05); }
+      .sqpq-cloud-count { font-size: 0.75rem; opacity: 0.5; vertical-align: middle; }
     `;
-    document.head.appendChild(style);
-  }
+      document.head.appendChild(style);
+    }
 
     function init() {
-        injectStyles();
-    document.querySelectorAll('[data-sqpq]').forEach(initWidget);
-  }
+      injectStyles();
+      document.querySelectorAll('[data-sqpq]').forEach(initWidget);
+      document.querySelectorAll('[data-sqpq-cloud]').forEach(initTagCloud);
+    }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-  } else {
-        init();
-  }
-})();
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
 </script>
