@@ -1,93 +1,379 @@
-# squarespace-custom-query
+# Squarespace *CCSQ* Widget
+ 
+Squarespace **Client-Side** custom query widget, utilizing Squarespace's client-side Custom Query API v2.
+
+[![gitlab-license](https://img.shields.io/gitlab/license/sgkens/squarespace-ccsq-widget?style=flat&logo=gitlab)squarespace-ccsq-widget(https://gitlab.com/sgkens/squarespace-ccsq-widget) 
+
+![squarespace](https://img.shields.io/badge/squarespace-APIv2-green3?style=flat&labelColor=cyan3)(https://gitlab.com/sgkens/squarespace-ccsq-widget) 
+
+![squarespace](https://img.shields.io/badge/squarespace-APIv2-green3?style=flat&labelColor=cyan3)
 
 
+## **Query Types**
 
-## Getting started
+- Uses **Squarespace's** `Client-Side` Custom Query `APIv2` to fetch products from a Squarespace store.
+- Add widgets via the `Add block` > `Code` > `Code` element, with-in a section of your Squarespace site.
+- Supports filtering by **category**, **tag**, **keyword**, **type**, **minimum price**, **maximum price**, **added after**, **added before**, **sort order**, **limit**, and **columns**.
+- Supports displaying a loading message, empty message, and a grid with configurable columns.
+- Supports displaying products in a grid or list format.
+- Supports displaying products with or without:
+    - **images**.
+    - **prices**.
+    - **titles**.
+    - **descriptions**.
+    - **variants**.
+    - **pricing**.
+    - **categories**.
+    - **tags**.
+    - **added dates**.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## **Usage**
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+1. Add the following script to your Squarespace site's `<head>` or `<footer>` perferably in the `footer`:
+    - **WebSite** -> **Custom Code** -> **Code Injection** -> *Footer*
+2. Use one of the examples below or a combination of the following attributes on any HTML element:
+    - `data-sqpq`
+    - `data-category`
+    - `data-tag`
+    - `data-keyword`
+    - `data-type`
+    - `data-min-price`
+    - `data-max-price`
+    - `data-added-after`
+    - `data-added-before`
+    - `data-sort-by`
+    - `data-limit`
+    - `data-columns`
+    - `data-empty-message`
 
-## Add your files
+### **Example**
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
+```html
+<div 
+    data-sqpq data-category="category1,category2" 
+    data-tag="tag1,tag2" 
+    data-keyword="keyword1,keyword2" 
+    data-type="type1,type2" 
+    data-min-price="10" 
+    data-max-price="20" 
+    data-added-after="2022-01-01" 
+    data-added-before="2022-12-31" 
+    data-sort-by="price-asc" 
+    data-limit="12" 
+    data-columns="3" 
+    data-empty-message="No products found."
+    >
+</div>
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/sgkens/squarespace-custom-query.git
-git branch -M main
-git push -uf origin main
+
+## **Options**
+
+| Attribute | Description | Default |
+| --- | --- | --- |
+| `data-sqpq` | Required. The ID of the HTML element to render the widget into. | |
+| `data-category` | Optional. A comma-separated list of categories to filter by. | |
+| `data-tag` | Optional. A comma-separated list of tags to filter by. | |
+| `data-keyword` | Optional. A comma-separated list of keywords to filter by. | |
+| `data-type` | Optional. A comma-separated list of product types to filter by. | |
+| `data-min-price` | Optional. The minimum price to filter by. | |
+| `data-max-price` | Optional. The maximum price to filter by. | |
+| `data-added-after` | Optional. The date to filter by. | |
+| `data-added-before` | Optional. The date to filter by. | |
+| `data-sort-by` | Optional. The sort order to use. | `price-asc` |
+| `data-limit` | Optional. The maximum number of products to display. | `12` |
+| `data-columns` | Optional. The number of columns to display. | `3` |
+| `data-empty-message` | Optional. The message to display when no products are found. | `No products found.` |
+
+## **Styling**
+
+The widget uses the following CSS classes:
+
+- `sqpq-grid`: The grid container.
+- `sqpq-cols-1`: A grid with 1 column.
+- `sqpq-cols-2`: A grid with 2 columns.
+- `sqpq-cols-3`: A grid with 3 columns.
+- `sqpq-cols-4`: A grid with 4 columns.
+- `sqpq-card`: The card container.
+- `sqpq-img-wrap`: The image wrapper.
+- `sqpq-no-img`: The placeholder image.
+- `sqpq-info`: The info container.
+- `sqpq-title`: The title.
+- `sqpq-price`: The price.
+- `sqpq-loading`: The loading message.
+- `sqpq-empty`: The empty message.
+
+
+## **All Query Types**
+
+### 1. Basic Filters
+
+#### *Filter by Substring Keyword*
+
+Matches any product containing the specified string within its title.
+
+```html
+<div
+  data-sqpq
+  data-keyword="mug"
+  data-limit="4"
+  data-columns="4"
+></div>
 ```
 
-## Integrate with your tools
+#### *Filter by Single Category*
 
-* [Set up project integrations](https://gitlab.com/sgkens/squarespace-custom-query/-/settings/integrations)
+Displays items explicitly assigned to a chosen storefront category.
 
-## Collaborate with your team
+```html
+<div
+  data-sqpq
+  data-category="apparel"
+  data-limit="6"
+  data-columns="3"
+></div>
+```
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+#### *Filter by Multiple Categories (OR Logic)*
 
-## Test and Deploy
+Matches products that belong to _either_ category.
 
-Use the built-in continuous integration in GitLab.
+```html
+<div
+  data-sqpq
+  data-category="ceramics, glassware"
+  data-limit="8"
+  data-columns="4"
+></div>
+```
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+#### *Filter by Single Tag*
 
-***
+```html
+<div
+  data-sqpq
+  data-tag="featured"
+  data-limit="4"
+  data-columns="4"
+></div>
+```
 
-# Editing this README
+#### *Filter by Multiple Tags (OR Logic)*
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Matches products that carry _either_ tag.
 
-## Suggestions for a good README
+```html
+<div
+  data-sqpq
+  data-tag="handmade, limited-edition"
+  data-limit="6"
+  data-columns="3"
+></div>
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### 2. Price and Type Constraints
 
-## Name
-Choose a self-explaining name for your project.
+#### *Specific Price Range*
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Filters items between a clear floor and ceiling value (inclusive, parsed in dollars).
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+```html
+<div
+  data-sqpq
+  data-min-price="25"
+  data-max-price="100"
+  data-sort-by="price-asc"
+  data-limit="12"
+  data-columns="4"
+></div>
+```
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+#### *Under a Fixed Threshold (Max Price Only)*
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+```html
+<div
+  data-sqpq
+  data-max-price="50"
+  data-sort-by="price-desc"
+  data-limit="6"
+  data-columns="3"
+></div>
+```
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+#### *Physical Products Only*
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```html
+<div
+  data-sqpq
+  data-type="physical"
+  data-limit="8"
+  data-columns="4"
+></div>
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+#### *Digital Products / Downloads Only*
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```html
+<div
+  data-sqpq
+  data-type="digital"
+  data-limit="8"
+  data-columns="4"
+></div>
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+#### *Service Items Only*
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+```html
+<div
+  data-sqpq
+  data-type="service"
+  data-limit="6"
+  data-columns="3"
+></div>
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### 3. Date-Bounded Filters
+
+#### *New Releases (Added After Fixed Date)*
+
+```html
+<div
+  data-sqpq
+  data-added-after="2026-01-01"
+  data-sort-by="date-desc"
+  data-limit="4"
+  data-columns="4"
+></div>
+```
+
+#### *Archive / Legacy Inventory (Added Before Fixed Date)*
+
+```html
+<div
+  data-sqpq
+  data-added-before="2025-06-01"
+  data-sort-by="date-asc"
+  data-limit="6"
+  data-columns="3"
+></div>
+```
+
+### 4. Advanced Matrix Variations (Strict AND Logic)
+
+#### *Clearance Matrix (Tag + Category + Maximum Price)*
+
+```html
+<div
+  data-sqpq
+  data-category="apparel"
+  data-tag="clearance"
+  data-max-price="30"
+  data-sort-by="price-asc"
+  data-limit="8"
+  data-columns="4"
+  data-empty-message="No clearance apparel available."
+></div>
+```
+
+#### *Premium New Digital Items (Type + Date + Minimum Price)*
+
+```html
+<div
+  data-sqpq
+  data-type="digital"
+  data-added-after="2025-12-31"
+  data-min-price="75"
+  data-sort-by="date-desc"
+  data-limit="3"
+  data-columns="3"
+  data-empty-message="No new premium digital items found."
+></div>
+```
+
+### 5. Layout and Structural Configurations
+
+#### *Single Row Spotlight / Banner Layout*
+
+```html
+<div
+  data-sqpq
+  data-limit="4"
+  data-columns="4"
+  data-sort-by="date-desc"
+></div>
+```
+
+#### *High-Density Showcase Matrix*
+
+```html
+<div
+  data-sqpq
+  data-limit="24"
+  data-columns="4"
+  data-sort-by="title-asc"
+></div>
+```
+
+#### *Single Column Vertical Sidebar*
+
+```html
+<div
+  data-sqpq
+  data-limit="5"
+  data-columns="1"
+  data-sort-by="price-desc"
+></div>
+```
+
+#### *Dual Column Split Layout*
+
+```html
+<div
+  data-sqpq
+  data-limit="2"
+  data-columns="2"
+  data-sort-by="date-desc"
+></div>
+```
+
+### 6. Alternative Sorting Configurations
+
+#### *Alphabetical Sorting (A to Z)*
+
+```html
+<div
+  data-sqpq
+  data-sort-by="title-asc"
+  data-limit="12"
+  data-columns="3"
+></div>
+```
+
+#### *Reverse Alphabetical Sorting (Z to A)*
+
+```html
+<div
+  data-sqpq
+  data-sort-by="title-desc"
+  data-limit="12"
+  data-columns="3"
+></div>
+```
+
+#### *Fallback Native Order*
+
+Omitting the `data-sort-by` attribute completely retains the default array positioning returned directly by the Squarespace collection layout.
+
+```html
+<div
+  data-sqpq
+  data-limit="6"
+  data-columns="3"
+></div>
+```
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under the terms of the MIT license.
+
+Copyright (c) [MIT LICENSE](LICENSE) 2022 Garvry K. Snow @sgkens
