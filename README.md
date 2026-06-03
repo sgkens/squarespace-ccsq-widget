@@ -1,12 +1,8 @@
 # Squarespace *CCSQ* Widget
  
-Squarespace **Client-Side** custom query widget, utilizing Squarespace's client-side Custom Query API v2.
+**Client-Side** custom query widget, utilizing Squarespace's client-side **front-end** Query API v2.
 
-[![gitlab-license](https://img.shields.io/gitlab/license/sgkens/squarespace-ccsq-widget?style=flat&logo=gitlab)squarespace-ccsq-widget(https://gitlab.com/sgkens/squarespace-ccsq-widget) 
-
-![squarespace](https://img.shields.io/badge/squarespace-APIv2-green3?style=flat&labelColor=cyan3)(https://gitlab.com/sgkens/squarespace-ccsq-widget) 
-
-![squarespace](https://img.shields.io/badge/squarespace-APIv2-green3?style=flat&labelColor=cyan3)
+[![gitlab-license](https://img.shields.io/gitlab/license/sgkens/squarespace-ccsq-widget?style=flat&logo=gitlab)](https://gitlab.com/sgkens/squarespace-ccsq-widget) ![squarespace](https://img.shields.io/badge/SquareSpace-APIv2-green3?style=flat&labelColor=cyan3) ![squarespace](https://img.shields.io/badge/Client_Side-Only-yellow?style=flat&labelColor=cyan3)
 
 
 ## **Query Types**
